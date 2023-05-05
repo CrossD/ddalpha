@@ -2,7 +2,7 @@
 % Please edit documentation in R/depth.fd.R
 \name{depth.sample}
 \alias{depth.sample}
-\title{Fast Depth Computation for Univariate and Bivariate Random Samples}
+\title{Fast depth computation for univariate and bivariate random samples}
 \usage{
 depth.sample(A, B)
 }

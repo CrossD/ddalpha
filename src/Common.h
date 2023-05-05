@@ -39,4 +39,5 @@ double* means(TDMatrix X, int n, int d);
 TDMatrix cov(TDMatrix X, int n, int d);
 
 void GetDirections(TDMatrix directions, int k, int d);
+void GetSignedDirections(TDMatrix directions, int k, int d, int* sign);
 void GetProjections(TDMatrix points, int n, int d, TDMatrix directions, int k, TDMatrix projections);

@@ -13,6 +13,7 @@ extern void AlphaLearnCV(void *, void *, void *, void *, void *, void *, void *,
 extern void DKnnClassify(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void DKnnLearnCv(void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void HDepth(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
+extern void HSignedDepth(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
 extern void HDepthEx(void *, void *, void *, void *, void *, void *, void *);
 extern void HDepthSpaceEx(void *, void *, void *, void *, void *, void *, void *, void *);
 extern void HDSpace(void *, void *, void *, void *, void *, void *, void *, void *, void *, void *);
@@ -55,6 +56,7 @@ static const R_CMethodDef CEntries[] = {
     {"DKnnClassify",         (DL_FUNC) &DKnnClassify,         10},
     {"DKnnLearnCv",          (DL_FUNC) &DKnnLearnCv,           9},
     {"HDepth",               (DL_FUNC) &HDepth,               12},
+    {"HSignedDepth",         (DL_FUNC) &HSignedDepth,         13},
     {"HDepthEx",             (DL_FUNC) &HDepthEx,              7},
     {"HDepthSpaceEx",        (DL_FUNC) &HDepthSpaceEx,         8},
     {"HDSpace",              (DL_FUNC) &HDSpace,              10},

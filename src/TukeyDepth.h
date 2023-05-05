@@ -13,3 +13,4 @@
 
 void GetDSpace(TDMatrix points, int n, int d, TVariables& cardinalities, int k, bool atOnce, TDMatrix dSpace, TDMatrix directions, TDMatrix projections);
 void GetDepths(double* point, TDMatrix points, int n, int d, TVariables& cardinalities, int k, bool atOnce, TDMatrix directions, TDMatrix projections, double* depths, TDMatrix ptPrjDepths /*accu, k*q */);
+void GetSignedDepths(double* point, TDMatrix points, int n, int d, TVariables& cardinalities, int k, bool atOnce, TDMatrix directions, TDMatrix projections, int* sign, double* depths, TDMatrix ptPrjDepths /*accu, k*q */);

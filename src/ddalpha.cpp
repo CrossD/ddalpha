@@ -135,6 +135,50 @@ void HDepth(double *points, double *objects, int *numObjects, int *dimension,
 	delete[] prjs;
 }
 
+void HSignedDepth(double *points, double *objects, int *numObjects, int *dimension, 
+	int *cardinalities, int *numClasses, double *directions, double *projections, 
+	int *k, int *sameDirs, int *seed, int *sign, double *depths){
+	setSeed(*seed);
+	int numPoints = 0;for (int i = 0; i < numClasses[0]; i++){numPoints += cardinalities[i];}
+	TDMatrix x = asMatrix(points, numPoints, dimension[0]);
+	TDMatrix z = asMatrix(objects, numObjects[0], dimension[0]);
+
+	TVariables cars(numClasses[0]);
+	for (int i = 0; i < numClasses[0]; i++){
+		cars[i] = cardinalities[i];
+	}
+
+	TDMatrix dirs = asMatrix(directions, k[0], *dimension);
+	TDMatrix prjs = asMatrix(projections,k[0], numPoints);
+	TDMatrix ptPrjDepths = newM(*k, *numClasses);
+	for (int i = 0; i < numObjects[0]; i++){
+		GetSignedDepths(z[i], x, numPoints, *dimension, cars, 
+			k[0], i == 0 ? 0 : sameDirs[0] /*at the first step fill the matrices*/, 
+			dirs, prjs, sign, depths + i * numClasses[0], ptPrjDepths);
+	/*	for (int j = 0; j < numClasses[0]; j++){
+			depths[i * numClasses[0] + j] = dps[j];
+		}*/
+	}
+	deleteM(ptPrjDepths);
+
+/*	if (*sameDirs){
+		for (int i = 0; i < k[0] * dimension[0]; i++){
+			directions[i] = dirs[i / dimension[0]][i%dimension[0]];
+		}
+		for (int i = 0; i < k[0] * numPoints; i++){
+			projections[i] = prjs[i / numPoints][i%numPoints];
+		}
+		}
+	deleteM(dirs);
+	deleteM(prjs);
+*/
+
+	delete[] x;
+	delete[] z;
+	delete[] dirs;
+	delete[] prjs;
+}
+
 void HDSpace(double *points, int *dimension, int *cardinalities, int *numClasses,
 	int *k, int *sameDirs, int *seed, double *dSpace, double *directions, double *projections){
 	setSeed(*seed);

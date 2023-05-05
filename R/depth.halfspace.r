@@ -106,7 +106,69 @@ depth.halfspace <- function(x, data, exact, method, num.directions = 1000, seed 
   return (ds)
 }
 
+# sign is a vector with d entries where d is the number of columns in data. Entry 1/-1/0 means large/small/large absolute values are regarded as extreme, allowing directionality for Tukey's depth. The implementation is obtained by constraining the entries of the random projection. Default to all 0 (consider both directions).
+depth.signed.halfspace <- function(x, data, exact, method, sign, num.directions = 1000, seed = 0){
+  if (!is.matrix(x) 
+      && is.vector(x)){
+    x <- matrix(x, nrow=1)
+  }
+  if (!(is.matrix(data) && is.numeric(data)
+        || is.data.frame(data) && prod(sapply(data, is.numeric))) 
+      || ncol(data) < 2){
+    stop("Argument \"data\" should be a numeric matrix of at least 2-dimensional data")
+  }
+  if (!is.numeric(x)){
+    stop("Argument \"x\" should be numeric")
+  }
+  if (ncol(x) != ncol(data)){
+    stop("Dimensions of the arguments \"x\" and \"data\" should coincide")
+  }
+  if (ncol(data) + 1 > nrow(data)){ #?
+    stop("To few data points")
+  }
+  if (missing(sign)) {
+    sign <- rep(0L, ncol(data))
+  }
 
+  points <- as.vector(t(data))
+  objects <- as.vector(t(x))
+  
+  method = .parse_HSD_pars(exact, method)
+  
+  if (method == 0)
+  if (!is.numeric(num.directions) 
+      || is.na(num.directions) 
+      || length(num.directions) != 1 
+      || !.is.wholenumber(num.directions) 
+      || !(num.directions > 1 && num.directions < 10000000)){
+    numDirections <- 1000
+    warning("Argument \"num.directions\" not specified correctly. 1000 is used as a default value")
+  }else{
+    numDirections <- num.directions
+  }
+  
+  if (method == 0){
+    c <- as.vector(nrow(data))
+    k <- numDirections
+    ds <- .C("HSignedDepth", 
+             as.double(points), 
+             as.double(objects), 
+             as.integer(nrow(x)), 
+             as.integer(ncol(data)), 
+             as.integer(c), 
+             as.integer(1), 
+             dirs=double(k*ncol(data)), 
+             prjs=double(k*nrow(data)), 
+             as.integer(k), 
+             as.integer(1), # use the same directions and projections
+             as.integer(seed),
+             as.integer(sign),
+             depths=double(nrow(x)))$depths
+  } else 
+    stop("Only the random projection method supports sign")
+  
+  return (ds)
+}
 
 
 depth.space.halfspace <- function(data, cardinalities, exact, method, num.directions = 1000, seed = 0){

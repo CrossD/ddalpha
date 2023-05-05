@@ -234,6 +234,28 @@ void GetDirections(TDMatrix directions, int k, int d){
 	}
 }
 
+void GetSignedDirections(TDMatrix directions, int k, int d, int* sign){
+	for (int i = 0; i < k; i++){
+		double* direction = directions[i];
+		double sqrSum = 0;
+		for (int j = 0; j < d; j++){
+			direction[j] = normDist(rEngine);
+      if (sign[j] == 1) {
+        direction[j] = abs(direction[j]);
+      } else if (sign[j] == -1) {
+        direction[j] = -abs(direction[j]);
+      } // Otherwise, do not constrain the direction
+
+			sqrSum += direction[j]*direction[j];
+		}
+		sqrSum = sqrt(sqrSum);
+		for (int j = 0; j < d; j++){
+			direction[j] = direction[j]/sqrSum;
+		}
+	}
+}
+
+
 void GetProjections(TDMatrix points, int n, int d, TDMatrix directions, int k, TDMatrix projections){
 	for (int i = 0; i < k; i++){
 		double* projection = projections[i];

@@ -85,6 +85,27 @@ inline void GetPtPrjDepths(double* projection, int n, double point, TVariables& 
 	}
 }
 
+inline void GetSignedPtPrjDepths(double* projection, int n, double point, TVariables& cardinalities, double* ptPrjDepths){
+	int q = cardinalities.size();
+	for (int i = 0; i < q; i++){
+		int beginIndex = 0;
+		for (int j = 0; j < q; j++){
+			if (j >= i){break;}
+			beginIndex += cardinalities[j];
+		}
+		int endIndex = beginIndex + cardinalities[i];
+		// int nPtsBelow = 0;
+		int nPtsAbove = 0;
+		for (int j = beginIndex; j < endIndex; j++){
+			// if (projection[j] <= point){nPtsBelow++;}
+			if (projection[j] >= point){nPtsAbove++;}
+		}
+		// ptPrjDepths[i] = (nPtsBelow <= nPtsAbove)?(double)nPtsBelow:(double)nPtsAbove;
+		ptPrjDepths[i] = (double)nPtsAbove;
+	}
+}
+
+
 //Indexing from zero
 void GetDSpace(TDMatrix points, int n, int d, TVariables& cardinalities, int k, bool atOnce, TDMatrix dSpace, TDMatrix directions, TDMatrix projections){
 	//1. Collecting basic statistics
@@ -152,6 +173,45 @@ void GetDepths(double* point, TDMatrix points, int n, int d,
 	}
 	for (int i = 0; i < k; i++){
 		GetPtPrjDepths(projections[i], n, pointProjections[i], cardinalities, ptPrjDepths[i]);
+	}
+	//3. Merge depths
+	for (int i = 0; i < q; i++){
+		depths[i] = cardinalities[i] + 1;
+	}
+	for (int i = 0; i < k; i++){
+		for (int j = 0; j < q; j++){
+			if (ptPrjDepths[i][j] < depths[j]){
+				depths[j] = ptPrjDepths[i][j];
+			}
+		}
+	}
+	for (int i = 0; i < q; i++){
+		depths[i] /= (double)cardinalities[i];
+	}
+}
+
+
+void GetSignedDepths(double* point, TDMatrix points, int n, int d, 
+	TVariables& cardinalities, int k, bool atOnce, 
+	TDMatrix directions, TDMatrix projections, int* sign, double* depths,
+	TDMatrix ptPrjDepths /*accu, k*q */){
+	//1. Collecting basic statistics
+	int q = cardinalities.size();
+	if (!atOnce){
+		GetSignedDirections(directions, k, d, sign);
+		GetProjections(points, n, d, directions, k, projections);
+	}	
+	//2. Calculate projection depths
+	TPoint pointProjections(k);
+	for (int i = 0; i < k; i++){
+		double curPrj = 0;
+		for (int j = 0; j < d; j++){
+			curPrj += point[j]*directions[i][j];
+		}
+		pointProjections[i] = curPrj;
+	}
+	for (int i = 0; i < k; i++){
+		GetSignedPtPrjDepths(projections[i], n, pointProjections[i], cardinalities, ptPrjDepths[i]);
 	}
 	//3. Merge depths
 	for (int i = 0; i < q; i++){
